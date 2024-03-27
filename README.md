@@ -1,10 +1,10 @@
 # DaTi*k*Z Dataset
-[![DaTikZv1](https://img.shields.io/badge/DaTikZv1-blue?label=%F0%9F%A4%97%20Hugging%20Face&labelColor=gray)](https://huggingface.co/nllg/DaTikZv1)
-[![DaTikZv2](https://img.shields.io/badge/DaTikZv2-blue?label=%F0%9F%A4%97%20Hugging%20Face&labelColor=gray)](https://huggingface.co/nllg/DaTikZv2)
+[![DaTikZv1](https://img.shields.io/badge/DaTikZ--v1-blue?label=%F0%9F%A4%97%20Hugging%20Face&labelColor=gray)](https://huggingface.co/datasets/nllg/datikz)
+[![DaTikZv2](https://img.shields.io/badge/DaTikZ--v2-blue?label=%F0%9F%A4%97%20Hugging%20Face&labelColor=gray)](https://huggingface.co/datasets/nllg/datikz-v2)
 
-DaTi*k*Z is a comprehensive dataset of Ti*k*Z drawings, which serves as a
-valuable resource for researchers and practitioners working with programmatic
-vector graphics in LaTeX.
+DaTi*k*Z is a dataset containing a wide variety of Ti*k*Z drawings. It is
+intended to support research and development of machine learning models that
+can generate or manipulate vector graphics in L<sup>A</sup>T<sub>E</sub>X.
 
 There are two main distributions available to the public:
 [DaTi*k*Z<sub>v1</sub>](https://huggingface.co/nllg/DaTikZv1) (introduced in
@@ -36,7 +36,7 @@ To generate the dataset, run the `main.py` script. Use the `--help` flag to
 view the available options. The commands for the official distributions are as
 follows:
 * **DaTi*k*Z<sub>v1</sub>**: `main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 334 --captionize`
-* **DaTi*k*Z<sub>v2</sub>**: `main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 386 --sketchify`
+* **DaTi*k*Z<sub>v2</sub>**: `main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 386`
 
 In this example, the `DATIKZ_ARXIV_FILES` environment variable should contain
 the paths to either the `jsonl` files obtained with the arxiv-latex-extract
@@ -45,5 +45,5 @@ utility, or archives that include these files.
 When executed successfully, the script generates the following output files:
 * `datikz-raw.parquet`: The raw, unsplit dataset without additional
   augmentation.
-* `datikz-train.parquet`: The training portion of the DaTi*k*Z dataset.
-* `datikz-test.parquet`: The test portion consisting of 1k items.
+* `datikz-train.parquet`: The training split of the DaTi*k*Z dataset.
+* `datikz-test.parquet`: The test split consisting of 1k items.
