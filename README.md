@@ -6,14 +6,14 @@ DaTi*k*Z is a dataset containing a wide variety of Ti*k*Z drawings. It is
 intended to support research and development of machine learning models that
 can generate or manipulate vector graphics in L<sup>A</sup>T<sub>E</sub>X.
 
-There are two main distributions available to the public:
-[DaTi*k*Z<sub>v1</sub>](https://huggingface.co/nllg/DaTikZv1) (introduced in
-[AutomaTi*k*Z](https://github.com/potamides/AutomaTikZ)) and
-[DaTi*k*Z<sub>v2</sub>](https://huggingface.co/nllg/DaTikZv2) (introduced in
-[DeTi*k*Zify](https://github.com/potamides/DeTikZify)). In compliance with
-licensing agreements, certain Ti*k*Z drawings are excluded from these public
-versions of the dataset. This repository provides tools and methods to recreate
-the complete dataset from scratch.
+There are two main distributions publicly available:
+[DaTi*k*Z<sub>v1</sub>](https://huggingface.co/datasets/nllg/datikz)
+(introduced in [AutomaTi*k*Z](https://github.com/potamides/AutomaTikZ)) and
+[DaTi*k*Z<sub>v2</sub>](https://huggingface.co/datasets/nllg/datikz-v2)
+(introduced in [DeTi*k*Zify](https://github.com/potamides/DeTikZify)). In
+compliance with licensing agreements, certain Ti*k*Z drawings are excluded from
+these public versions of the dataset. This repository provides tools and
+methods to recreate the complete dataset from scratch.
 
 > [!NOTE]
 > The datasets you produce might vary slightly from the originally created
