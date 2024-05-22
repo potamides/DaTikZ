@@ -4,7 +4,7 @@ from importlib.resources import files
 
 from .. import load_silent
 
-REPO = "potamides/AutomaTikZ"
+REPO = "potamides/DaTikZ"
 TIKZ_DATA = str(files(import_module(__name__)) / "gpt4.json")
 
 def load():
@@ -15,5 +15,5 @@ def load():
             "caption": item['caption'],
             "code": item['code'],
             "date": datetime.utcfromtimestamp(item['date']/1000),
-            "uri": f"https://github.com/{REPO}/blob/main/dataset/datikz/loaders/gpt4/gpt4.json#L{idx}"
+            "uri": f"https://github.com/{REPO}/blob/main/datikz/loaders/gpt4/gpt4.json#L{idx}"
         }
