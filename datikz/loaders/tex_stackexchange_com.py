@@ -54,23 +54,22 @@ def trim_attribs(elem_attribs, attrib_type="question"):
         raise Exception('Unrecognized attribute type - please specify either question or answer')
 
 def extract_code(soup):
-    patterns = [r"\documentclass", r"\end{document}", r"\begin{tikzpicture}", r"\end{tikzpicture}"]
+    fallback_class = "\\documentclass[tikz]{{standalone}}\n\n{}"
+    fallback_doc = "\\begin{{document}}\n{}\n\\end{{document}}"
+    pattern_list = [[fr"\begin{{{env}}}", fr"\end{{{env}}}"] for env in ["tikzpicture", "forest"]]
+
     # all code snippets that match
     for formatted in soup.find_all("pre"):
-        if code := formatted.code:
-            if all(pattern in code.text for pattern in patterns):
-                yield code
-
-def extract_description(soup):
-    for img in soup.find_all('img'):
-        img.replace_with("[IMG]")
-    for pre in soup.find_all("pre"):
-        pre.replace_with("[CODE]")
-
-    return soup
+        if code := formatted.code.text:
+            if any(all(pattern in code for pattern in patterns) for patterns in pattern_list):
+                if r"\begin{document}" not in code:
+                    code = fallback_doc.format(code.strip())
+                if r"\documentclass" not in code:
+                    code = fallback_class.format(code.strip())
+                yield code.strip()
 
 class TeXExchangeParser():
-    def __init__(self, xml_path, min_score=1, tags=["tikz-pgf"]):
+    def __init__(self, xml_path, min_score=1, tags=[]):
         self.xml_path = xml_path
         # dict to save questions
         self.questions = defaultdict(lambda: None, {})
@@ -138,12 +137,12 @@ class TeXExchangeParser():
                         title = parent["Title"] or ""
                         markup = BeautifulSoup(parent["Body"] or "", "html.parser")
 
-                        if description := extract_description(markup).text.strip():
+                        if description := markup.text.strip():
                             for a in parent["Answers"].values():
                                 for code in extract_code(BeautifulSoup(a["Body"], "html.parser")):
                                     yield {
                                         "caption": "\n\n".join((title, description)).strip(),
-                                        "code": code.text,
+                                        "code": code,
                                         "date": datetime.fromisoformat(a['CreationDate']),
                                         "uri": f"https://tex.stackexchange.com/a/{a['Id']}"
                                     }
