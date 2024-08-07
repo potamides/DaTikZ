@@ -5,9 +5,11 @@ from functools import cache, cached_property
 from os.path import join
 from re import DOTALL, findall, finditer, search, sub
 from subprocess import CalledProcessError, check_output
+from textwrap import dedent
 
 from TexSoup import TexSoup
 
+from .. import lines_removeprefix, lines_startwith
 from .demacro import Error as DemacroError, TexDemacro
 
 # https://tex.stackexchange.com/a/115035
@@ -116,6 +118,14 @@ class TikzFinder():
 
         return "\n\n".join([extended_preamble, r"\begin{document}", tikz, r"\end{document}"])
 
+    def _clean_code(self, code: str, prefix: str = "") -> str:
+        if len(prefix) > 0 and not prefix.strip():
+            return dedent(code)
+        elif lines_startwith(dedented:=dedent(code), "%"):
+            return dedent(lines_removeprefix(dedented, "%"))
+        else:
+            return code.removeprefix(prefix)
+
     def _clean_caption(self, caption: str) -> str:
         # expand any macros
         caption = self._process_macros(self._preamble.macros, caption)
@@ -152,19 +162,19 @@ class TikzFinder():
     def find(self):
         found = set()
         figure_regex = r"\\begin{figure}(.*?)\\end{figure}"
-        tikz_regex = r"\\begin{tikzpicture}.*?\\end{tikzpicture}"
+        tikz_regex = r"(([^\n]*?)\\begin{tikzpicture}.*?\\end{tikzpicture})"
         # try to extract tikzpictures with captions first
         for figure in findall(figure_regex, self.tex, DOTALL):
-            # extracting captions for figures with multiple tikzpictures (e.g. subfig) are above my paygrade
+            # extracting captions for figures with multiple tikzpictures (e.g. subfig) is above my paygrade
             if figure.count(r"\begin{tikzpicture}") == 1:
                 if tikz := search(tikz_regex, figure, DOTALL):
                     if caption := self._find_caption(figure):
-                        found.add(tikz.group())
-                        yield self.Tikz(self._make_document(tikz.group()), self._clean_caption(caption))
-        for tikz in findall(tikz_regex, self.tex, DOTALL):
+                        found.add(cleaned:=self._clean_code(tikz.group(), tikz.group(2)))
+                        yield self.Tikz(self._make_document(cleaned), self._clean_caption(caption))
+        for tikz, prefix in findall(tikz_regex, self.tex, DOTALL):
             if tikz not in found:
-                found.add(tikz)
-                yield self.Tikz(self._make_document(tikz), '')
+                found.add(cleaned:=self._clean_code(tikz, prefix))
+                yield self.Tikz(self._make_document(cleaned), '')
 
     def __call__(self, *args, **kwargs):
         yield from self.find(*args, **kwargs)
