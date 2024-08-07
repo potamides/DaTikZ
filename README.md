@@ -33,17 +33,15 @@ additionally need to preprocess arXiv bulk data using
 
 ## Usage
 To generate the dataset, run the `main.py` script. Use the `--help` flag to
-view the available options. The commands for the official distributions are as
+view the available options. DaTi*k*Z<sub>v2</sub>, for example was created as
 follows:
-* **DaTi*k*Z<sub>v1</sub>**: `main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 334 --captionize`
-* **DaTi*k*Z<sub>v2</sub>**: `main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 386`
-
+```sh
+main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 386
+```
 In this example, the `DATIKZ_ARXIV_FILES` environment variable should contain
 the paths to either the `jsonl` files obtained with the arxiv-latex-extract
 utility, or archives that include these files.
 
 When executed successfully, the script generates the following output files:
-* `datikz-raw.parquet`: The raw, unsplit dataset without additional
-  augmentation.
 * `datikz-train.parquet`: The training split of the DaTi*k*Z dataset.
 * `datikz-test.parquet`: The test split consisting of 1k items.
