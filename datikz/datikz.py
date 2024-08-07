@@ -29,19 +29,16 @@ from datikz.loaders import (
     chatgpt,
     gpt4,
     janosh_tikz,
-    petarv_tikz,
-    tikz_favorites,
     latex_examples,
+    petarv_tikz,
+    pgfmanual,
     tex_stackexchange_com,
     texample_net,
+    tikz_favorites,
     tikz_net,
 )
-from llm.chat import WizardLM
 
 logger = logging.get_logger("transformers")
-
-PROMPT_PREFIX, POSSIBLE_SUFFIX = '"Desired outcome:', '"'
-PROMPT = "Create a clear and specific caption for an image that depicts the desired outcome of the following question. Utilize all relevant details provided in the question, particularly focusing on the visual aspects. Avoid referencing any example images or code snippets. Ensure that your caption is comprehensive and accurate:"
 
 def batched(iterable, n):
     it = iter(iterable)
@@ -121,17 +118,16 @@ def texse_gen(xml_path): return tex_stackexchange_com.TeXExchangeParser(xml_path
 class TikZConfig(builder.BuilderConfig):
     """BuilderConfig for TikZ."""
 
-    def __init__(self, *args, bs=8, size=384, arxiv_files=[], captionize=False, **kwargs):
+    def __init__(self, *args, bs=8, size=384, arxiv_files=[], **kwargs):
         super().__init__(*args, **kwargs)
         self.bs = bs
         self.size = size
-        self.captionize = captionize
-        self.chatbot = WizardLM(bs=bs, prefix=PROMPT_PREFIX, model_max_length=512) # tight on memory
         self.data_urls = {
             "PetarV-/TikZ": "https://github.com/PetarV-/TikZ/archive/refs/heads/master.zip",
             "janosh/tikz": "https://github.com/janosh/tikz/archive/refs/heads/main.zip",
             "tikz_favorites": "https://github.com/f0nzie/tikz_favorites/archive/refs/heads/master.zip",
             "LaTeX-examples": "https://github.com/MartinThoma/LaTeX-examples/archive/refs/heads/master.zip",
+            "pgfmanual": "https://github.com/pgf-tikz/pgf/archive/refs/heads/master.zip",
             "chatgpt": "https://github.com/evanthebouncy/chatgpt-svg/raw/master/data.tsv",
             "arxiv": arxiv_files,
             "tex.stackexchange.com": "https://archive.org/download/stackexchange/tex.stackexchange.com.7z/Posts.xml",
@@ -141,6 +137,7 @@ class TikZConfig(builder.BuilderConfig):
             "janosh/tikz": janosh_tikz.load,
             "tikz_favorites": tikz_favorites.load,
             "LaTeX-examples": latex_examples.load,
+            "pgfmanual": pgfmanual.load,
             "chatgpt": chatgpt.load,
             "gpt4": gpt4.load,
             "texample.net": texample_net.load,
@@ -217,30 +214,6 @@ class TikZ(builder.GeneratorBasedBuilder):
 
         return example
 
-    def _truncate(self, description):
-        """
-        Descriptions can be longer than 512 tokens, which leads to OOM errors. So we
-        truncate them to the half of the model maximum length to leave enough
-        space for generating text.
-        """
-        tokenizer = self.config.chatbot.tokenizer # type: ignore
-        return tokenizer.decode(
-            tokenizer(description.strip(),
-            truncation=True,
-            add_special_tokens=False,
-            max_length=tokenizer.model_max_length//2)['input_ids']
-        ).strip()
-
-    def _captionize(self, instruction, examples):
-        instructions = [instruction] * len(examples)
-        inputs = [self._truncate(ex["caption"]) for ex in examples]
-
-        for example, caption in zip(examples, self.config.chatbot(instructions, inputs)): # type: ignore
-            example['caption'] = (
-                caption.strip().removeprefix(self.config.chatbot.prefix).removesuffix(POSSIBLE_SUFFIX) # type: ignore
-            ).split("\n")[0].strip().removesuffix(POSSIBLE_SUFFIX).strip()
-        return examples
-
     def _compile(self, ex):
         output = tex2img(ex["code"], size=self.config.size) # type: ignore
         ex["image"] = {"path": None, "bytes": output['image']}
@@ -258,10 +231,6 @@ class TikZ(builder.GeneratorBasedBuilder):
                     all_tikz.add(ex['code'])
                     yield ex
 
-        def captionize(loader):
-            for batch in batched(loader, self.config.bs): # type: ignore
-                yield from self._captionize(PROMPT, batch) if self.config.captionize else batch # type: ignore
-
         def skip_on_error(loader):
             nonlocal skipped
             while True:
@@ -275,13 +244,12 @@ class TikZ(builder.GeneratorBasedBuilder):
         for name, load in zip(generators.keys(), (partial(preprocess, load) for load in generators.values())):
             logger.debug("Processing examples from '%s'.", name)
             match name:
-                case "PetarV-/TikZ" | "janosh/tikz" | "tikz_favorites" | "LaTeX-examples": loader = load(directory=datasets[name])
                 case "arxiv": loader = load(directories=datasets[name], full_clean=True, bs=self.config.bs) # type: ignore
                 case "chatgpt": loader = load(tsv=datasets[name])
-                case "tex.stackexchange.com": loader = captionize(load(xml_path=datasets[name]))
+                case "tex.stackexchange.com": loader = load(xml_path=datasets[name])
                 case "texample.net" | "tikz.net" | "gpt4": loader = load()
                 case "pgfplots.net": loader = load(base_url=f"https://{name}")
-                case _: raise ValueError(f'Source "{name}" not known!')
+                case _: loader = load(directory=datasets[name])
 
             with Pool(self.config.bs) as p: # type: ignore
                 for example in skip_on_error(p.imap_unordered(self._compile, loader)):

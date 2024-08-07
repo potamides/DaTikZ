@@ -12,6 +12,12 @@ from datasets import (
 def get_creation_time(repo):
     return datetime.strptime(load(urlopen(f"https://api.github.com/repos/{repo}"))['created_at'], "%Y-%m-%dT%H:%M:%SZ")
 
+def lines_startwith(string, prefix):
+    return all(line.startswith(prefix) for line in string.splitlines())
+
+def lines_removeprefix(string, prefix):
+    return "".join(line.removeprefix(prefix) for line in string.splitlines(keepends=True))
+
 def load_silent(*args, **kwargs):
     if is_progress_bar_enabled():
         disable_progress_bar()
