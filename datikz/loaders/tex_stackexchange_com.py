@@ -60,7 +60,7 @@ def extract_code(soup):
 
     # all code snippets that match
     for formatted in soup.find_all("pre"):
-        if code := formatted.code.text:
+        if code := getattr(formatted.code, "text", None):
             if any(all(pattern in code for pattern in patterns) for patterns in pattern_list):
                 if r"\begin{document}" not in code:
                     code = fallback_doc.format(code.strip())

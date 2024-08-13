@@ -61,7 +61,3 @@ def load(directory):
                         "date": CREATED,
                         "uri": join(f"https://github.com/{REPO}/blob/master", quote(relpath(file, directory).split(sep, 1)[1]))
                     }
-
-if __name__ == "__main__":
-    for example in load("/home/amnifilius/Downloads"):
-        input(example['code'])

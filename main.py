@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 from datetime import datetime
-from random import randint
+import random
 import sys
 
 from datasets import disable_caching, load_dataset
+import numpy.random
 from sacremoses import MosesTokenizer
-from transformers import set_seed
 
 MIN_CAPTION_LENGTH = 30
 CUTOFF_DATE = datetime(2024, 1, 1)
@@ -18,6 +18,10 @@ TEST_EXCLUDE = {
 }
 
 tokenize = MosesTokenizer().tokenize
+
+def set_seed(seed):
+    random.seed(seed)
+    numpy.random.seed(seed)
 
 def is_test_candidate(ex):
     """
@@ -34,7 +38,7 @@ def is_test_candidate(ex):
     )
 
 def random_substring(string, length=50):
-   start = randint(0, max(0, len(string) - length))
+   start = random.randint(0, max(0, len(string) - length))
    return string[start:start+length]
 
 def is_contaminated(ex, code, steps=3):
@@ -89,7 +93,7 @@ if __name__ == "__main__":
     disable_caching()
     args = parse_args()
     sys.argv = sys.argv[:1] # FIXME: ugly hack to prevent svg2tikz from consuming script args
-    datikz = load_dataset("datikz", split="train", **vars(args))
+    datikz = load_dataset("datikz", split="train", trust_remote_code=True, **vars(args))
     train, test = train_test_split(datikz)
 
     train.to_parquet("datikz-train.parquet", compression="GZIP") # type: ignore

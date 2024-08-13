@@ -1,6 +1,6 @@
 from re import sub
 
-from svg2tikz.extensions.tikz_export import convert_svg
+from svg2tikz import convert_svg
 
 from . import get_creation_time, load_silent
 

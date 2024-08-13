@@ -17,8 +17,8 @@ from datasets import Features, Image, Value, builder
 from datasets.info import DatasetInfo
 from datasets.splits import Split, SplitGenerator
 from datasets.utils import logging
-import fitz
-from fitz.fitz import EmptyFileError
+import pymupdf
+from pymupdf import EmptyFileError
 from pdf2image.exceptions import PDFPageCountError
 from pdf2image.pdf2image import convert_from_path
 from pdfCropMargins import crop
@@ -88,7 +88,7 @@ def tex2img(code, size=384, timeout=120, expand_to_square=True):
             pdfname = try_compile(tmpfile.name)
 
             # extract last page
-            doc = fitz.open(pdfname) # type: ignore
+            doc = pymupdf.open(pdfname)
             doc.select([len(doc)-1])
             doc.saveIncr()
 
@@ -120,6 +120,7 @@ class TikZConfig(builder.BuilderConfig):
 
     def __init__(self, *args, bs=8, size=384, arxiv_files=[], **kwargs):
         super().__init__(*args, **kwargs)
+        pymupdf.TOOLS.mupdf_display_errors(False)
         self.bs = bs
         self.size = size
         self.data_urls = {
