@@ -36,7 +36,7 @@ To generate the dataset, run the `main.py` script. Use the `--help` flag to
 view the available options. DaTi*k*Z<sub>v2</sub>, for example was created as
 follows:
 ```sh
-main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 386
+main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 384
 ```
 In this example, the `DATIKZ_ARXIV_FILES` environment variable should contain
 the paths to either the `jsonl` files obtained with the arxiv-latex-extract
