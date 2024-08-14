@@ -3,6 +3,7 @@ Combination of various sources of tikz descriptions with aligned code.
 """
 
 from functools import partial
+from operator import or_
 from io import BytesIO
 from itertools import islice
 from multiprocessing.pool import Pool
@@ -36,6 +37,7 @@ from datikz.loaders import (
     texample_net,
     tikz_favorites,
     tikz_net,
+    openaiwatch,
 )
 
 logger = logging.get_logger("transformers")
@@ -129,6 +131,7 @@ class TikZConfig(builder.BuilderConfig):
             "LaTeX-examples": "https://github.com/MartinThoma/LaTeX-examples/archive/refs/heads/master.zip",
             "pgfmanual": "https://github.com/pgf-tikz/pgf/archive/refs/heads/master.zip",
             "chatgpt": "https://github.com/evanthebouncy/chatgpt-svg/raw/master/data.tsv",
+            "openaiwatch": "https://hf.co/datasets/yuntian-deng/openaiwatch/resolve/main/data/train-00000-of-00001.parquet",
             "arxiv": arxiv_files,
             "tex.stackexchange.com": "https://archive.org/download/stackexchange/tex.stackexchange.com.7z/Posts.xml",
         }
@@ -139,6 +142,7 @@ class TikZConfig(builder.BuilderConfig):
             "LaTeX-examples": latex_examples.load,
             "pgfmanual": pgfmanual.load,
             "chatgpt": chatgpt.load,
+            "openaiwatch": openaiwatch.load,
             "gpt4": gpt4.load,
             "texample.net": texample_net.load,
             "tikz.net": tikz_net.load,
@@ -246,6 +250,7 @@ class TikZ(builder.GeneratorBasedBuilder):
             match name:
                 case "arxiv": loader = load(directories=datasets[name], full_clean=True, bs=self.config.bs) # type: ignore
                 case "chatgpt": loader = load(tsv=datasets[name])
+                case "openaiwatch": loader = map(partial(or_, dict(origin="gpt4")), load(parquet=datasets[name]))
                 case "tex.stackexchange.com": loader = load(xml_path=datasets[name])
                 case "texample.net" | "tikz.net" | "gpt4": loader = load()
                 case "pgfplots.net": loader = load(base_url=f"https://{name}")
@@ -253,7 +258,7 @@ class TikZ(builder.GeneratorBasedBuilder):
 
             with Pool(self.config.bs) as p: # type: ignore
                 for example in skip_on_error(p.imap_unordered(self._compile, loader)):
-                    example["origin"] = name
+                    example["origin"] = example.get("origin", name)
                     yield idx, example
                     idx += 1
 
