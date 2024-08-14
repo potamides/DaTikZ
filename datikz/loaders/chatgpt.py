@@ -1,6 +1,7 @@
 from re import sub
 
 from svg2tikz import convert_svg
+from inkex.colors import ColorIdError
 
 from . import get_creation_time, no_progress_bar
 from datasets import load_dataset
@@ -17,12 +18,15 @@ def load(tsv):
     with no_progress_bar():
         dataset = load_dataset("csv", sep="\t", data_files=tsv, split="train")
         for idx, item in enumerate(dataset, 1):
-            caption = item['prompt'].removeprefix("Using the SVG format, output ").split(".")[0] + "."
-            tikz = convert(item['svg'])
+            try:
+                caption = item['prompt'].removeprefix("Using the SVG format, output ").split(".")[0] + "."
+                tikz = convert(item['svg'])
 
-            yield {
-                "caption": caption,
-                "code": tikz,
-                "date": CREATED,
-                "uri": f"https://github.com/{REPO}/blob/master/data.tsv#L{idx}"
-            }
+                yield {
+                    "caption": caption,
+                    "code": tikz,
+                    "date": CREATED,
+                    "uri": f"https://github.com/{REPO}/blob/master/data.tsv#L{idx}"
+                }
+            except ColorIdError:
+                pass
