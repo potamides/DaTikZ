@@ -2,7 +2,9 @@ from multiprocessing import Pool
 from os import listdir
 from os.path import isdir, join
 
-from .. import load_silent
+from datasets import load_dataset
+
+from .. import no_progress_bar
 from .finder import TikzFinder
 
 def _load_worker(paper):
@@ -30,6 +32,6 @@ def expand(directories_or_files):
 
 def load(directories, bs=1):
     files = expand(directories)
-    with Pool(bs) as p:
-        for results in p.imap_unordered(_load_worker, load_silent("json", data_files=files, split="train")):
+    with no_progress_bar(), Pool(bs) as p:
+        for results in p.imap_unordered(_load_worker, load_dataset("json", data_files=files, split="train")):
             yield from results

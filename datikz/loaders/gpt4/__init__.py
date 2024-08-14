@@ -2,13 +2,17 @@ from datetime import datetime
 from importlib import import_module
 from importlib.resources import files
 
-from .. import load_silent
+from datasets import load_dataset
+
+from .. import no_progress_bar
+
 
 REPO = "potamides/DaTikZ"
 TIKZ_DATA = str(files(import_module(__name__)) / "gpt4.json")
 
 def load():
-    dataset = load_silent("json", data_files=TIKZ_DATA, split="train")
+    with no_progress_bar():
+        dataset = load_dataset("json", data_files=TIKZ_DATA, split="train")
 
     for idx, item in enumerate(dataset, 1):
         yield {
