@@ -6,6 +6,7 @@ import sys
 
 from datasets import disable_caching, load_dataset
 import numpy.random
+import pymupdf
 from sacremoses import MosesTokenizer
 
 MIN_CAPTION_LENGTH = 30
@@ -91,8 +92,9 @@ def parse_args():
 if __name__ == "__main__":
     set_seed(0)
     disable_caching()
+    pymupdf.TOOLS.mupdf_display_errors(False)
     args = parse_args()
-    sys.argv = sys.argv[:1] # FIXME: ugly hack to prevent svg2tikz from consuming script args
+    sys.argv = sys.argv[:1] # FIXME: ugly workaround to prevent svg2tikz from consuming script args
     datikz = load_dataset("datikz", split="train", trust_remote_code=True, **vars(args))
     train, test = train_test_split(datikz)
 

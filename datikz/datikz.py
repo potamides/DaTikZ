@@ -120,7 +120,6 @@ class TikZConfig(builder.BuilderConfig):
 
     def __init__(self, *args, bs=8, size=384, arxiv_files=[], **kwargs):
         super().__init__(*args, **kwargs)
-        pymupdf.TOOLS.mupdf_display_errors(False)
         self.bs = bs
         self.size = size
         self.data_urls = {
