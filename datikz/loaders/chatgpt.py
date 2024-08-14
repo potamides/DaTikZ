@@ -2,18 +2,15 @@ from re import sub
 
 from svg2tikz import convert_svg
 
-from . import get_creation_time, load_silent
+from . import get_creation_time, no_progress_bar
+from datasets import load_dataset
 
 REPO = "evanthebouncy/chatgpt-svg"
 CREATED = get_creation_time(REPO)
 
 def convert(svg):
-    tikz = convert_svg(svg, wrap=True, crop=True)
-
-    # https://github.com/xyz2tex/svg2tikz/issues/30
-    tikz = sub(r'\.?0{2}\d*', "", tikz)
+    tikz = convert_svg(svg, wrap=True, crop=True, round_number=2)
     tikz = sub(4 * '\n', "\n", tikz).strip()
-
     return tikz
 
 def load(tsv):
