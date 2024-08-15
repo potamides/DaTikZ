@@ -8,6 +8,7 @@ PyMuPDF~=1.24.9
 Pillow~=10.4.0
 svg2tikz~=3.1.0
 sacremoses~=0.1.1
+lxml~=4.9.4
 #TexSoup~=0.3.1
 https://github.com/alvinwan/TexSoup/archive/448c89c3df614b418eb11201fba8da339cdf7559.zip
 regex
