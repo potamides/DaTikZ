@@ -1,5 +1,5 @@
+from glob import glob
 from multiprocessing import Pool
-from os import listdir
 from os.path import isdir, join
 
 from datasets import load_dataset
@@ -21,17 +21,15 @@ def _load_worker(paper):
         pass
     return found
 
-def expand(directories_or_files):
-    files = list()
-    for file in directories_or_files:
+def expand(files):
+    for file in files:
         if isdir(file):
-            files.extend([join(file, paper) for paper in listdir(file)])
+            yield from glob(join(file, "*.jsonl"))
         else:
-            files.append(file)
-    return files
+            yield file
 
-def load(directories, bs=1):
-    files = expand(directories)
+def load(files, bs=1):
     with no_progress_bar(), Pool(bs) as p:
-        for results in p.imap_unordered(_load_worker, load_dataset("json", data_files=files, split="train")):
+        ds = load_dataset("json", data_files=list(expand(files)), split="train")
+        for results in p.imap_unordered(_load_worker, ds):
             yield from results

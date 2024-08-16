@@ -3,11 +3,13 @@ Combination of various sources of tikz descriptions with aligned code.
 """
 
 from functools import partial
-from operator import or_
+from glob import glob
 from io import BytesIO
 from itertools import islice
 from multiprocessing.pool import Pool
+from operator import or_
 from os import getpgid, killpg
+from os.path import isdir, join
 from re import sub
 from signal import SIGKILL
 from subprocess import CalledProcessError, DEVNULL, Popen, TimeoutExpired
@@ -18,11 +20,11 @@ from datasets import Features, Image, Value, builder
 from datasets.info import DatasetInfo
 from datasets.splits import Split, SplitGenerator
 from datasets.utils import logging
-import pymupdf
-from pymupdf import EmptyFileError
 from pdf2image.exceptions import PDFPageCountError
 from pdf2image.pdf2image import convert_from_path
 from pdfCropMargins import crop
+import pymupdf
+from pymupdf import EmptyFileError
 from regex import search
 
 from datikz.loaders import (
@@ -132,7 +134,7 @@ class TikZConfig(builder.BuilderConfig):
             "pgfmanual": "https://github.com/pgf-tikz/pgf/archive/refs/heads/master.zip",
             "chatgpt": "https://github.com/evanthebouncy/chatgpt-svg/raw/master/data.tsv",
             "openaiwatch": "https://hf.co/datasets/yuntian-deng/openaiwatch/resolve/main/data/train-00000-of-00001.parquet",
-            "arxiv": arxiv_files,
+            "arxiv": list(arxiv.expand(arxiv_files)),
             "tex.stackexchange.com": "https://archive.org/download/stackexchange/tex.stackexchange.com.7z/Posts.xml",
         }
         self.generators = {
@@ -248,7 +250,7 @@ class TikZ(builder.GeneratorBasedBuilder):
         for name, load in zip(generators.keys(), (partial(preprocess, load) for load in generators.values())):
             logger.debug("Processing examples from '%s'.", name)
             match name:
-                case "arxiv": loader = load(directories=datasets[name], full_clean=True, bs=self.config.bs) # type: ignore
+                case "arxiv": loader = load(files=datasets[name], full_clean=True, bs=self.config.bs) # type: ignore
                 case "chatgpt": loader = load(tsv=datasets[name])
                 case "openaiwatch": loader = map(partial(or_, dict(origin="gpt4")), load(parquet=datasets[name]))
                 case "tex.stackexchange.com": loader = load(xml_path=datasets[name])

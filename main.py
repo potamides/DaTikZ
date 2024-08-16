@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 from datetime import datetime
+from os.path import abspath
 import random
 import sys
 
@@ -72,7 +73,8 @@ def parse_args():
         "--arxiv_files",
         nargs='*',
         default=[],
-        help="list of paths to files created with arxiv-latex-extract or archives containing them"
+        type=abspath,
+        help="list of directories with files created by arxiv-latex-extract or archives containing them"
     )
     argument_parser.add_argument(
         "--size",

@@ -39,8 +39,8 @@ follows:
 main.py --arxiv_files "${DATIKZ_ARXIV_FILES[@]}" --size 384
 ```
 In this example, the `DATIKZ_ARXIV_FILES` environment variable should contain
-the paths to either the `jsonl` files obtained with the arxiv-latex-extract
-utility, or archives that include these files.
+paths of either the directories with `jsonl` files obtained with
+arxiv-latex-extract or archives that contain these files.
 
 When executed successfully, the script generates the following output files:
 * `datikz-train.parquet`: The training split of the DaTi*k*Z dataset.
