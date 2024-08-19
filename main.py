@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 from datetime import datetime
 from os.path import abspath
+from multiprocessing import set_start_method
 import random
 import sys
 
@@ -94,6 +95,7 @@ def parse_args():
 if __name__ == "__main__":
     set_seed(0)
     disable_caching()
+    set_start_method("forkserver")
     pymupdf.TOOLS.mupdf_display_errors(False)
     args = parse_args()
     sys.argv = sys.argv[:1] # FIXME: ugly workaround to prevent svg2tikz from consuming script args
