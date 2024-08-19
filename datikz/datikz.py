@@ -42,7 +42,7 @@ from datikz.loaders import (
     openaiwatch,
 )
 
-logger = logging.get_logger("transformers")
+logger = logging.get_logger("datasets")
 
 def batched(iterable, n):
     it = iter(iterable)
