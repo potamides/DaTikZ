@@ -55,7 +55,7 @@ class TikzFinder():
 
         try:
             # try TexSoup first, as it works with multiline statements
-            soup = TexSoup(preamble, tolerance=1)
+            soup = TexSoup(preamble)
             statements = map(str, soup.children)
         except:
             statements = preamble.split("\n")

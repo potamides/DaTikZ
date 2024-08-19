@@ -451,12 +451,16 @@ class Char_stream(Stream):
 class TexDemacro(Stream):
     defs_db = "x"
     defs_db_file = "x.db"
+    depth_limit = 20
 
-    def __init__(self, macros=None, *args, **kwargs):
+    def __init__(self, macros=None, depth=0, *args, **kwargs):
         self.defs = ({}, {})
+        self.depth = depth + 1
         super().__init__(*args, **kwargs)
         if macros:
             self.add_defs_str(macros)
+        if self.depth > self.depth_limit:
+            raise Error("Depth limit exceeded.")
 
     def smart_tokenize(self, in_str, handle_inputs=False, isatletter=False):
         """Returns a list of tokens.
@@ -878,7 +882,7 @@ class TexDemacro(Stream):
         db_h.close()
 
     def add_defs_str(self, defs_str):
-        ds = TexDemacro()
+        ds = TexDemacro(depth=self.depth)
         ds.defs = self.defs
         defs_text = ds.smart_tokenize(defs_str,isatletter=True)
         # changing ds.defs will change self.defs
@@ -949,7 +953,7 @@ class TexDemacro(Stream):
         return self.apply_all_recur(out)
 
     def apply_all_recur(self, data, report=False, return_macros=False):
-        ts = TexDemacro(data=data)
+        ts = TexDemacro(data=data, depth=self.depth)
         ts.defs = self.defs
         command_defs, env_defs = self.defs
         out, macros = [], []
@@ -1038,7 +1042,7 @@ class TexDemacro(Stream):
         if newer(clean_tex_file, tex_file):
             logging.info("Using %s." % (clean_tex_file))
         else:
-            ts = TexDemacro()
+            ts = TexDemacro(depth=self.depth)
             ts.data = []
             ts.defs = self.defs
             ts.process_file(file)
