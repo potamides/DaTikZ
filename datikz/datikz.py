@@ -3,13 +3,11 @@ Combination of various sources of tikz descriptions with aligned code.
 """
 
 from functools import partial
-from glob import glob
 from io import BytesIO
 from itertools import islice
 from multiprocessing.pool import Pool
 from operator import or_
 from os import getpgid, killpg
-from os.path import isdir, join
 from re import sub
 from signal import SIGKILL
 from subprocess import CalledProcessError, DEVNULL, Popen, TimeoutExpired
