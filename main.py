@@ -84,10 +84,16 @@ def parse_args():
         help="resolution when rasterizing PDFs to PNGs"
     )
     argument_parser.add_argument(
-        "--bs",
+        "--num_arxiv_workers",
         default=8,
         type=int,
-        help="batch size compiling LaTeX documents (and extracting from arXiv)"
+        help="number of workers for extracting TikZ pictures extracting from arXiv"
+    )
+    argument_parser.add_argument(
+        "--num_compile_workers",
+        default=8,
+        type=int,
+        help="number of workers for compiling LaTeX"
     )
 
     return argument_parser.parse_args()

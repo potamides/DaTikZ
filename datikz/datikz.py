@@ -120,9 +120,10 @@ def texse_gen(xml_path): return tex_stackexchange_com.TeXExchangeParser(xml_path
 class TikZConfig(builder.BuilderConfig):
     """BuilderConfig for TikZ."""
 
-    def __init__(self, *args, bs=8, size=384, arxiv_files=[], **kwargs):
+    def __init__(self, *args, num_arxiv_workers=8, num_compile_workers=8, size=384, arxiv_files=[], **kwargs):
         super().__init__(*args, **kwargs)
-        self.bs = bs
+        self.num_arxiv_workers = num_arxiv_workers
+        self.num_compile_workers = num_compile_workers
         self.size = size
         self.data_urls = {
             "PetarV-/TikZ": "https://github.com/PetarV-/TikZ/archive/refs/heads/master.zip",
@@ -248,7 +249,7 @@ class TikZ(builder.GeneratorBasedBuilder):
         for name, load in zip(generators.keys(), (partial(preprocess, load) for load in generators.values())):
             logger.debug("Processing examples from '%s'.", name)
             match name:
-                case "arxiv": loader = load(files=datasets[name], full_clean=True, bs=self.config.bs) # type: ignore
+                case "arxiv": loader = load(files=datasets[name], full_clean=True, num_workers=self.config.num_arxiv_workers) # type: ignore
                 case "chatgpt": loader = load(tsv=datasets[name])
                 case "openaiwatch": loader = map(partial(or_, dict(origin="gpt4")), load(parquet=datasets[name]))
                 case "tex.stackexchange.com": loader = load(xml_path=datasets[name])
@@ -256,7 +257,7 @@ class TikZ(builder.GeneratorBasedBuilder):
                 case "pgfplots.net": loader = load(base_url=f"https://{name}")
                 case _: loader = load(directory=datasets[name])
 
-            with Pool(self.config.bs) as p: # type: ignore
+            with Pool(self.config.num_compile_workers) as p: # type: ignore
                 for example in skip_on_error(p.imap_unordered(self._compile, loader)):
                     example["origin"] = example.get("origin", name)
                     yield idx, example

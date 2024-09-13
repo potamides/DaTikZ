@@ -13,7 +13,7 @@ There are two main distributions publicly available:
 (introduced in [DeTi*k*Zify](https://github.com/potamides/DeTikZify)). In
 compliance with licensing agreements, certain Ti*k*Z drawings are excluded from
 these public versions of the dataset. This repository provides tools and
-methods to recreate the complete dataset from scratch.
+methods to help with recreating the complete dataset from scratch.
 
 > [!NOTE]
 > The datasets you produce might vary slightly from the originally created

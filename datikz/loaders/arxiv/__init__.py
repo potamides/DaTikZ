@@ -28,8 +28,8 @@ def expand(files):
         else:
             yield file
 
-def load(files, bs=1):
-    with no_progress_bar(), Pool(bs) as p:
+def load(files, num_workers=1):
+    with no_progress_bar(), Pool(num_workers) as p:
         ds = load_dataset("json", data_files=list(expand(files)), split="train")
         for results in p.imap_unordered(_load_worker, ds):
             yield from results
