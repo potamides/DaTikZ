@@ -45,3 +45,35 @@ arxiv-latex-extract or archives that contain these files.
 When executed successfully, the script generates the following output files:
 * `datikz-train.parquet`: The training split of the DaTi*k*Z dataset.
 * `datikz-test.parquet`: The test split consisting of 1k items.
+
+> [!IMPORTANT]
+> The `--captionize` flag, formerly used to automatically augment captions to
+> better align with their figures, is no longer supported. To augment extracted
+> captions, we recommend implementing your own solution using the latest
+> [MultiModal Large Language
+> Models](https://github.com/BradyFU/Awesome-Multimodal-Large-Language-Models).
+
+## Citation
+If DaTi*k*Z has been beneficial for your research or applications, we kindly
+request you to acknowledge this by citing the following papers:
+
+```bibtex
+@misc{belouadi2024detikzify,
+  title={DeTikZify: Synthesizing Graphics Programs for Scientific Figures and Sketches with TikZ},
+  author={Jonas Belouadi and Simone Paolo Ponzetto and Steffen Eger},
+  year={2024},
+  eprint={2405.15306},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL}
+}
+```
+
+```bibtex
+@inproceedings{belouadi2024automatikz,
+  title={AutomaTikZ: Text-Guided Synthesis of Scientific Vector Graphics with TikZ},
+  author={Jonas Belouadi and Anne Lauscher and Steffen Eger},
+  booktitle={The Twelfth International Conference on Learning Representations},
+  year={2024},
+  url={https://openreview.net/forum?id=v3K5TVP8kZ}
+}
+```
