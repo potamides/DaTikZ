@@ -58,22 +58,22 @@ If DaTi*k*Z has been beneficial for your research or applications, we kindly
 request you to acknowledge this by citing the following papers:
 
 ```bibtex
-@misc{belouadi2024detikzify,
-  title={DeTikZify: Synthesizing Graphics Programs for Scientific Figures and Sketches with TikZ},
-  author={Jonas Belouadi and Simone Paolo Ponzetto and Steffen Eger},
-  year={2024},
-  eprint={2405.15306},
-  archivePrefix={arXiv},
-  primaryClass={cs.CL}
+@inproceedings{belouadi2024detikzify,
+    title={{DeTikZify}: Synthesizing Graphics Programs for Scientific Figures and Sketches with {TikZ}},
+    author={Jonas Belouadi and Simone Paolo Ponzetto and Steffen Eger},
+    booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems},
+    year={2024},
+    url={https://openreview.net/forum?id=bcVLFQCOjc}
 }
+
 ```
 
 ```bibtex
 @inproceedings{belouadi2024automatikz,
-  title={AutomaTikZ: Text-Guided Synthesis of Scientific Vector Graphics with TikZ},
-  author={Jonas Belouadi and Anne Lauscher and Steffen Eger},
-  booktitle={The Twelfth International Conference on Learning Representations},
-  year={2024},
-  url={https://openreview.net/forum?id=v3K5TVP8kZ}
+    title={{AutomaTikZ}: Text-Guided Synthesis of Scientific Vector Graphics with {TikZ}},
+    author={Jonas Belouadi and Anne Lauscher and Steffen Eger},
+    booktitle={The Twelfth International Conference on Learning Representations},
+    year={2024},
+    url={https://openreview.net/forum?id=v3K5TVP8kZ}
 }
 ```
