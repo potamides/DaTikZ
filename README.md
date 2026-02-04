@@ -62,14 +62,14 @@ If DaTi*k*Z has been beneficial for your research or applications, we kindly
 request you to acknowledge this by citing the following papers:
 
 ```bibtex
-@misc{belouadi2025tikzero,
+@inproceedings{belouadi2025tikzero,
     title={{TikZero}: Zero-Shot Text-Guided Graphics Program Synthesis},
-    author={Jonas Belouadi and Eddy Ilg and Margret Keuper and Hideki Tanaka and Masao Utiyama and Raj Dabre and Steffen Eger and Simone Paolo Ponzetto},
+    author={Belouadi, Jonas and Ilg, Eddy and Keuper, Margret and Tanaka, Hideki and Utiyama, Masao and Dabre, Raj and Eger, Steffen and Ponzetto, Simone},
+    booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month={October},
     year={2025},
-    eprint={2503.11509},
-    archivePrefix={arXiv},
-    primaryClass={cs.CL},
-    url={https://arxiv.org/abs/2503.11509},
+    pages={17793-17806},
+    url={https://openaccess.thecvf.com/content/ICCV2025/html/Belouadi_TikZero_Zero-Shot_Text-Guided_Graphics_Program_Synthesis_ICCV_2025_paper.html}
 }
 ```
 
